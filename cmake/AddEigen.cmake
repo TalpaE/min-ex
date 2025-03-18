@@ -16,8 +16,8 @@ option(SERENITY_USE_BLAS "Use a BLAS library with Eigen" ON)
 #
 if(NOT ADD_EIGEN_SEARCHED_EXTERNAL_LINALG_LIBRARIES)
   if(SERENITY_USE_INTEL_MKL)
-    # include(FindMKL)
-    find_package(MKL CONFIG REQUIRED)
+    include(FindMKL)
+    # find_package(MKL CONFIG REQUIRED)
   endif()
 
   if(MKL_FOUND)
