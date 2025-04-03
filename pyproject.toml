@@ -50,14 +50,15 @@ logging.level = "INFO"
 build-dir = "serenity-wheel/build"
 sdist.include = ["dev/templates/*"]
 wheel.exclude = ["bin/**", "include/**", "lib/**", "lib64/*", "share/cmake/**", "share/libecpint/**", "share/libint/**"]
+wheel.license-files = ["**/LICENSE", "**/CITATION", "**/COPYING", "**/LICENSE.md"]
 
 [tool.scikit-build.cmake.define]
 SERENITY_USAGE_FROM_SOURCE = false
 HDF5_ROOT="/usr/local/h5"
 BUILD_SHARED_LIBS = true
-# MKL_INCLUDE_DIRS ="/opt/intel/oneapi/mkl/2025.0/include"
-# MKL_LIBRARIES="/opt/intel/oneapi/mkl/2025.0/lib/intel64"
 MKL_ROOT = "/opt/intel/oneapi/mkl/2025.0"
+MKL_INCLUDE_DIRS ="/opt/intel/oneapi/mkl/2025.0/include"
+MKL_LIBRARIES="/opt/intel/oneapi/mkl/2025.0/lib/intel64"
 # MKL_DIR = "/opt/intel/oneapi/mkl/2025.0/lib/cmake/mkl"
 
 [tool.cibuildwheel]
@@ -72,7 +73,6 @@ manylinux-x86_64-image = "manylinux_2_28"
 # source /opt/intel/oneapi/setvars.sh
 # source /opt/intel/oneapi/mkl/2025.0/env/vars.sh
 # export MKLROOT=/opt/intel/oneapi/mkl/2025.0
-
 # tee > /tmp/oneAPI.repo << EOF
 # [oneAPI]
 # name=Intel® oneAPI repository
@@ -87,6 +87,17 @@ manylinux-x86_64-image = "manylinux_2_28"
 before-all = """
   git clone https://gitlab.com/libeigen/eigen.git
   cd eigen && git checkout 3.4.0 && cmake -S . -B build && cmake --build build --target install && cd ..
+  tee > /tmp/oneAPI.repo << EOF
+[oneAPI]
+name=Intel® oneAPI repository
+baseurl=https://yum.repos.intel.com/oneapi
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+EOF
+  mv /tmp/oneAPI.repo /etc/yum.repos.d
+  yum install -y intel-oneapi-mkl-devel-2025.0.1
 """
 archs = ["x86_64"]
 # set LD_LIBRARY_PATH for serenity, xcfun and hdf5
@@ -94,10 +105,11 @@ repair-wheel-command = """
 ls serenity-wheel/build/lib
 echo $SERENITY_USAGE_FROM_SOURCE
 export LD_LIBRARY_PATH=/usr/local/lib64:/project/serenity-wheel/lib64:/usr/local/h5/lib:/project/lib:/project/serenity-wheel/build/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/2025.0/lib/intel64:$LD_LIBRARY_PATH
 auditwheel repair -w {dest_dir} {wheel}
 """
 # only build CPython and not PyPy
 skip = ["*-musllinux_x86_64", "pp*"]
 
-# [tool.cibuildwheel.linux.environment]
-# LD_LIBRARY_PATH = "/opt/intel/oneapi/mkl/2025.0/lib/intel64:/usr/local/lib64:serenity-wheel/build/lib64:/usr/local/h5/lib:serenity-wheel/lib:serenity-wheel/build/lib:$LD_LIBRARY_PATH"
+[tool.cibuildwheel.linux.environment]
+LD_LIBRARY_PATH = "/opt/intel/oneapi/mkl/2025.0/lib/intel64:/usr/local/lib64:serenity-wheel/build/lib64:/usr/local/h5/lib:serenity-wheel/lib:serenity-wheel/build/lib:$LD_LIBRARY_PATH"

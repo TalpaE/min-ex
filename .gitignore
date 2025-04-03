@@ -64,3 +64,5 @@ eclipseFormatProfile.xml
 wheelhouse/
 dist/
 **/__pycache__
+
+.py312

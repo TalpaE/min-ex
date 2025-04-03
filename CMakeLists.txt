@@ -271,9 +271,6 @@ endif(SERENITY_PYTHON_BINDINGS)
 
 option(SERENITY_USAGE_FROM_SOURCE "Generate files for easy usage without invoking 'make install'." ON)
 if(SERENITY_USAGE_FROM_SOURCE)
-  if (NOT EXISTS ${PROJECT_SOURCE_DIR}/serenity.sh)
-    file(COPY ${PROJECT_SOURCE_DIR}/dev/templates/serenity.sh DESTINATION ${PROJECT_SOURCE_DIR})
-  endif()
   # Create links to bin, lib and include
   add_custom_command(TARGET serenity POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_BINARY_DIR}/lib" "${CMAKE_CURRENT_SOURCE_DIR}/lib")
