@@ -50,7 +50,7 @@ logging.level = "INFO"
 build-dir = "serenity-wheel/build"
 sdist.include = ["dev/templates/*"]
 wheel.exclude = ["bin/**", "include/**", "lib/**", "lib64/*", "share/cmake/**", "share/libecpint/**", "share/libint/**"]
-wheel.license-files = ["**/LICENSE", "**/CITATION", "**/COPYING", "**/LICENSE.md", "build/Makefile", "test"]
+wheel.license-files = ["LICENSE", "mkl/*", "eigen/COPYING.MPL2", "eigen/COPYING.LGPL", "libxc/*", "xcfun/*", "ecpint/*", "libint/*", "gtest/*", "laplace-minimax/*"]
 
 [tool.scikit-build.cmake.define]
 SERENITY_USAGE_FROM_SOURCE = false
@@ -80,6 +80,17 @@ gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.
 EOF
   mv /tmp/oneAPI.repo /etc/yum.repos.d
   yum install -y intel-oneapi-mkl-devel-2025.0.1
+  mkdir -p mkl ecpint eigen gtest laplace-minimax libint libxc xcfun
+  curl -o ecpint/CITATION https://raw.githubusercontent.com/robashaw/libecpint/refs/tags/v1.0.7/CITATION
+  curl -o ecpint/LICENSE https://raw.githubusercontent.com/robashaw/libecpint/refs/tags/v1.0.7/LICENSE
+  curl -o gtest/LICENSE https://raw.githubusercontent.com/google/googletest/refs/tags/v1.13.0/LICENSE
+  curl -o laplace-minimax/LICENSE https://raw.githubusercontent.com/bhelmichparis/laplace-minimax/55414f3f28b89ffa602ecb1f12e5645a998a2206/LICENSE
+  curl -o laplace-minimax/README.md https://raw.githubusercontent.com/bhelmichparis/laplace-minimax/55414f3f28b89ffa602ecb1f12e5645a998a2206/README.md
+  curl -o libint/LICENSE https://raw.githubusercontent.com/evaleev/libint/refs/tags/v2.7.0-beta.6/LICENSE
+  curl -o libxc/COPYING https://gitlab.com/libxc/libxc/-/raw/6.1.0/COPYING?ref_type=tags&inline=false
+  curl -o libxc/CITATION https://gitlab.com/libxc/libxc/-/raw/6.1.0/CITATION?ref_type=tags&inline=false
+  cp /opt/intel/oneapi/mkl/2025.0/share/doc/mkl/licensing/license.txt mkl/
+  curl -o xcfun/LICENSE.md https://raw.githubusercontent.com/qcserenity/xcfun/refs/heads/master/LICENSE.md
 """
 archs = ["x86_64"]
 # set LD_LIBRARY_PATH for serenity, xcfun and hdf5
